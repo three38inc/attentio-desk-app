@@ -18,6 +18,7 @@
             and so much more.
           </p>
           <button @click="open('https://simulatedgreg.gitbooks.io/electron-vue/content/')">Read the Docs</button><br><br>
+          <div class="title">Users - {{ users.length }}</div>
         </div>
         <div class="doc">
           <div class="title alt">Other Documentation</div>
@@ -31,10 +32,21 @@
 
 <script>
   import SystemInformation from './LandingPage/SystemInformation'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: 'landing-page',
-    components: { SystemInformation },
+    components: { 
+      SystemInformation 
+    },
+    mounted(){
+      this.$store.dispatch('getUsers')
+    },
+    computed: {
+      ...mapGetters({
+        users: 'getUsers'
+      })
+    },    
     methods: {
       open (link) {
         this.$electron.shell.openExternal(link)
@@ -43,7 +55,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
 
   * {
