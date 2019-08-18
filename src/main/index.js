@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Tray, Menu } from 'electron'
+import { app, BrowserWindow, Tray, Menu, ipcMain } from 'electron'
 import store from  '../renderer/store'
 import path from 'path'
 
@@ -11,39 +11,31 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 let mainWindow, tray
-const winURL = process.env.NODE_ENV === 'development'
-  ? `http://localhost:9080`
-  : `file://${__dirname}/index.html`
+const winURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080` : `file://${__dirname}/index.html`
+
 
 
 const createTray = () => {
   // Create a new tray
   tray = new Tray(path.join(__static, '/logo.png'))
     
-  const contextMenu = Menu.buildFromTemplate([
-    { 
-      label: 'Show / Hide',
-      click: () => toggleWindow
-    },
-    { 
-      label: 'Quit', 
-      accelerator: 'Command+Q',
-      selector: 'terminate:'
-    }
-  ])
   tray.setToolTip('Attentio App')
-  // tray.setContextMenu(contextMenu)
 
-  tray.on('right-click', toggleWindow)
-  tray.on('double-click', toggleWindow)
-  tray.on('click', toggleWindow)
+  tray.on('double-click', () => {
+    toggleWindow()
+  })
+
+  tray.on('click', () => {
+    toggleWindow()
+  })
+
+  tray.on('right-click', () => {
+    toggleWindow()
+  })
 }
 
 function createWindow () {
 
-  /**
-   * Initial window options
-   */
   mainWindow = new BrowserWindow({
     height: 450,
     useContentSize: true,
@@ -53,6 +45,7 @@ function createWindow () {
     fullscreenable: false,
     resizable: false,
     transparent: true,
+    skipTaskbar: true,  // for avoiding icon in windows taskbar
     webPreferences: {
       nodeIntegration: true 
     }
@@ -62,12 +55,9 @@ function createWindow () {
 
   mainWindow.setVisibleOnAllWorkspaces(true)
 
-  mainWindow.once('ready-to-show', () => {
-    const position = getWindowPosition()
-    mainWindow.setPosition(position.x, position.y, false)
-    mainWindow.show()
-    mainWindow.focus()
-  })
+  // mainWindow.once('ready-to-show', () => {
+  //   showWindow()
+  // })
 
   // Hide the window when it loses focus
   mainWindow.on('blur', () => {
@@ -76,8 +66,13 @@ function createWindow () {
 
 }
 
-// hide the dock icon
-app.dock.hide()
+app.requestSingleInstanceLock()
+app.on('second-instance', (event, argv, cwd) => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore()
+    showWindow()
+  }
+})
 
 app.on('ready', () => {
   createTray()
@@ -90,6 +85,11 @@ app.on('window-all-closed', () => {
   }
 })
 
+if(app.dock){
+  // hide the dock icon
+  app.dock.hide()
+}
+
 app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
@@ -101,17 +101,29 @@ app.on('browser-window-created',function(event, window) {
   window.setMenu(null);
 });
 
+//Receive and reply to synchronous message
+ipcMain.on('quit-app', (event, args) => {
+  app.quit()
+}); 
+
 // getWindowPosition
 const getWindowPosition = () => {
   const windowBounds = mainWindow.getBounds()
   const trayBounds = tray.getBounds()
 
   // Center window horizontally below the tray icon
-  const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2))
-
-  // Position window 4 pixels vertically below the tray icon
-  const y = Math.round(trayBounds.y + trayBounds.height + 4)
-
+  let x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2))
+  let y = 0
+  if (process.platform !== 'win32') {
+    // not windows
+    // Position window 4 pixels vertically below the tray icon
+    y = Math.round(trayBounds.y + trayBounds.height + 4)
+  }else{
+    // windows
+    // Position window 4 pixels vertically above the tray icon
+    y = Math.round(trayBounds.y - trayBounds.height - windowBounds.height - 4)
+  }
+  console.log(y)
   return { x: x, y: y }
 }
 

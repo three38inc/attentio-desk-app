@@ -27,6 +27,7 @@
                 silent: true,
                 body : data.message,
                 icon: data.sender.profile_picture,
+                requireInteraction: true
               })
             }
         }
@@ -37,4 +38,8 @@
 <style>
   /* CSS */
   @import "~bulma/css/bulma.css";
+
+  ::-webkit-scrollbar {
+      display: none;
+  }
 </style>

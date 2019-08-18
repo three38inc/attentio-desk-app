@@ -1,12 +1,18 @@
 {
   "name": "attentio-desk-app",
-  "version": "0.0.1",
-  "author": "Jobith M Basheer @jobith93",
+  "version": "0.0.2",
+  "author": {
+    "name": "Jobith M Basheer",
+    "email": "jobith@three38inc.com"
+  },
   "description": "Desktop application for Attentio using Electron",
   "license": "UNLICENSED",
+  "copyright": "THREE38 Innovation Cafe LLP",
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
+    "build:all": "node .electron-vue/build.js && electron-builder -mwl",
+    "build:publish-all": "node .electron-vue/build.js && electron-builder -mwl --publish always",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
@@ -17,8 +23,10 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "attentio-desk-app",
+    "productName": "Attentio",
     "appId": "com.three38inc.attentio.desktop",
+    "asar": true,
+    "copyright": "Copyright © 2019 THREE38 Innovation Cafe LLP",
     "directories": {
       "output": "build"
     },
@@ -38,16 +46,41 @@
           "y": 150,
           "type": "file"
         }
-      ]
+      ],
+      "publish": ["github"]
     },
     "mac": {
-      "icon": "build/icons/icon.icns"
+      "category": "public.app-category.productivity",
+      "icon": "build/icons/icon.icns",
+      "publish": ["github"]
     },
     "win": {
-      "icon": "build/icons/icon.ico"
+      "target": [
+        {
+          "target": "nsis-web",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "${productName}-Web-Setup-${version}.${ext}",
+      "publisherName": "THREE38 Innovation Cafe LLP"
+    },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": false,
+      "oneClick": false,
+      "perMachine": false
     },
     "linux": {
-      "icon": "build/icons"
+      "category": "Chat;GNOME;GTK;Network;InstantMessaging",
+      "packageCategory": "GNOME;GTK;Network;InstantMessaging",
+      "target": [ "deb", "tar.xz" ],
+      "maintainer": "Jobith M Basheer <jobith@three38inc.com>",
+      "icon": "build/icons",
+      "publish": ["github"]
     }
   },
   "dependencies": {

@@ -1,15 +1,16 @@
 <template>
     <div class="widget-popup__header">
         <div class="widget-popup__header-logo"></div>
-        <div class="widget-popup__header-title">Attentio <small id="version">v1.2.1110</small></div>
+        <div class="widget-popup__header-title">Attentio <small id="version">v0.0.2</small></div>
         <div class="widget-popup__header-btns" id="popup-header-buttons">
             <button class="cir-btn settings" title="Attentio Settings" @click="showSettings"><img src="~@/assets/icon-settings.svg" alt=""></button>
-            <!-- <button class="cir-btn settings" title="Attentio Reload"><img src="~@/assets/icon-reload.svg" alt=""></button> -->
+            <button class="cir-btn settings" title="Attentio Quit"  @click="quitApplication"><img src="~@/assets/icon-close.svg" alt=""></button>
         </div>
     </div>
 </template>
 
 <script>
+import { ipcRenderer } from 'electron'
 export default {
     name: 'Header',
     methods: {
@@ -18,6 +19,9 @@ export default {
                 this.$router.push('/home')
             else
                 this.$router.push('/settings')
+        },
+        quitApplication(){
+            ipcRenderer.send('quit-app');
         }
     }
 }
@@ -91,7 +95,7 @@ export default {
 
 .widget-popup__header-btns .cir-btn:hover{
     opacity: 0.9;
-    transform: rotate(45deg);
+    transform: rotate(90deg);
 }
 
 .widget-popup__header-btns .cir-btn:last-child {
