@@ -40,7 +40,7 @@ function createWindow () {
     height: 450,
     useContentSize: true,
     width: 350,
-    show: false,
+    show: true,
     frame: false,
     fullscreenable: false,
     resizable: false,
@@ -74,37 +74,53 @@ app.on('second-instance', (event, argv, cwd) => {
   }
 })
 
-app.on('ready', () => {
-  createTray()
-  createWindow()
-})
+const gotTheLock = app.requestSingleInstanceLock()
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
-if(app.dock){
-  // hide the dock icon
-  app.dock.hide()
-}
-
-app.on('activate', () => {
-  if (mainWindow === null) {
-    createWindow()
-  }
-  toggleWindow()
-})
-
-app.on('browser-window-created',function(event, window) {
-  window.setMenu(null);
-});
-
-//Receive and reply to synchronous message
-ipcMain.on('quit-app', (event, args) => {
+if (!gotTheLock) {
   app.quit()
-}); 
+} 
+else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      showWindow()
+    }
+  })
+
+  // Create myWindow, load the rest of the app, etc...
+  app.on('ready', () => {
+    createTray()
+    createWindow()
+  })
+  
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+  })
+  
+  if(app.dock){
+    // hide the dock icon
+    app.dock.hide()
+  }
+  
+  app.on('activate', () => {
+    if (mainWindow === null) {
+      createWindow()
+    }
+    toggleWindow()
+  })
+  
+  app.on('browser-window-created',function(event, window) {
+    window.setMenu(null);
+  });
+  
+  //Receive and reply to synchronous message
+  ipcMain.on('quit-app', (event, args) => {
+    app.quit()
+  }); 
+}
 
 // getWindowPosition
 const getWindowPosition = () => {
@@ -117,13 +133,12 @@ const getWindowPosition = () => {
   if (process.platform !== 'win32') {
     // not windows
     // Position window 4 pixels vertically below the tray icon
-    y = Math.round(trayBounds.y + trayBounds.height + 4)
+    y = Math.round(trayBounds.y + trayBounds.height)
   }else{
     // windows
     // Position window 4 pixels vertically above the tray icon
-    y = Math.round(trayBounds.y - trayBounds.height - windowBounds.height - 4)
+    y = Math.round(trayBounds.y - trayBounds.height - windowBounds.height)
   }
-  console.log(y)
   return { x: x, y: y }
 }
 
