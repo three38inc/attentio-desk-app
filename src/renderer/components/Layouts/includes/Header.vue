@@ -1,7 +1,7 @@
 <template>
     <div class="widget-popup__header">
         <div class="widget-popup__header-logo"></div>
-        <div class="widget-popup__header-title">Attentio <small id="version">v0.0.2</small></div>
+        <div class="widget-popup__header-title">Attentio <small id="version">v{{ version }}</small></div>
         <div class="widget-popup__header-btns" id="popup-header-buttons">
             <button class="cir-btn settings" title="Attentio Settings" @click="showSettings"><img src="~@/assets/icon-settings.svg" alt=""></button>
             <button class="cir-btn settings" title="Attentio Quit"  @click="quitApplication"><img src="~@/assets/icon-close.svg" alt=""></button>
@@ -13,6 +13,16 @@
 import { ipcRenderer } from 'electron'
 export default {
     name: 'Header',
+    mounted(){
+        ipcRenderer.on('app-version', (event, message) => {
+            this.version = message
+        })
+    },
+    data(){
+        return {
+            version: '0.0.0'
+        }
+    },
     methods: {
         showSettings(){
             if(this.$route.name == 'Settings')

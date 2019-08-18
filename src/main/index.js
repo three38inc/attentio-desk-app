@@ -40,7 +40,7 @@ function createWindow () {
     height: 450,
     useContentSize: true,
     width: 350,
-    show: true,
+    show: false,
     frame: false,
     fullscreenable: false,
     resizable: false,
@@ -55,10 +55,13 @@ function createWindow () {
 
   mainWindow.setVisibleOnAllWorkspaces(true)
 
-  // mainWindow.once('ready-to-show', () => {
-  //   showWindow()
-  // })
-
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.send('app-version', app.getVersion())
+  })
+  
+  mainWindow.once('ready-to-show', () => {
+    showWindow()
+  })
   // Hide the window when it loses focus
   mainWindow.on('blur', () => {
     mainWindow.hide()
@@ -115,11 +118,16 @@ else {
   app.on('browser-window-created',function(event, window) {
     window.setMenu(null);
   });
+
+  app.setLoginItemSettings({
+    openAtLogin: true,
+    path: app.getPath('exe')
+  })
   
   //Receive and reply to synchronous message
   ipcMain.on('quit-app', (event, args) => {
     app.quit()
-  }); 
+  });
 }
 
 // getWindowPosition

@@ -75,7 +75,6 @@
     "nsis": {
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": false,
-      "createStartMenuShortcut": false,
       "oneClick": false,
       "perMachine": false
     },
