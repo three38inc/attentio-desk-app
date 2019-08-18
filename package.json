@@ -1,6 +1,6 @@
 {
   "name": "attentio-desk-app",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": {
     "name": "Jobith M Basheer",
     "email": "jobith@three38inc.com"
@@ -47,12 +47,16 @@
           "type": "file"
         }
       ],
-      "publish": ["github"]
+      "publish": [
+        "github"
+      ]
     },
     "mac": {
       "category": "public.app-category.productivity",
       "icon": "build/icons/icon.icns",
-      "publish": ["github"]
+      "publish": [
+        "github"
+      ]
     },
     "win": {
       "target": [
@@ -71,16 +75,22 @@
     "nsis": {
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": false,
+      "createStartMenuShortcut": false,
       "oneClick": false,
       "perMachine": false
     },
     "linux": {
       "category": "Chat;GNOME;GTK;Network;InstantMessaging",
       "packageCategory": "GNOME;GTK;Network;InstantMessaging",
-      "target": [ "deb", "tar.xz" ],
+      "target": [
+        "deb",
+        "tar.xz"
+      ],
       "maintainer": "Jobith M Basheer <jobith@three38inc.com>",
       "icon": "build/icons",
-      "publish": ["github"]
+      "publish": [
+        "github"
+      ]
     }
   },
   "dependencies": {
