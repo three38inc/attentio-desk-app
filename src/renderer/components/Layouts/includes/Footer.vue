@@ -25,9 +25,10 @@ export default {
 }
 
 .widget-popup__footer-logo {
-    width: 100px;
-    height: 20px;
-    background-size: cover;
+    width: 150px;
+    height: 25px;
+    background-position: center center;
+    background-size: contain;
     background-repeat: no-repeat;
     background-image: url('~@/assets/three38-logo.png');
 }
