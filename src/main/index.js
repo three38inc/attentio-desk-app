@@ -37,7 +37,7 @@ const createTray = () => {
 function createWindow () {
 
   mainWindow = new BrowserWindow({
-    height: 540,
+    height: 445,
     useContentSize: true,
     width: 350,
     show: false,
